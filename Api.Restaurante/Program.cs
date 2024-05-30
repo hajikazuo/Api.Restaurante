@@ -18,12 +18,28 @@ builder.Services.AddDbContext<RestauranteContext>(options =>
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+
+    //migrations
+    var db = scope.ServiceProvider.GetRequiredService<RestauranteContext>();
+    db.Database.Migrate();
+
+}
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseCors(options =>
+{
+    options.WithOrigins("http://localhost:8081");
+    options.AllowAnyMethod();
+    options.AllowAnyHeader();
+});
 
 app.UseHttpsRedirection();
 
